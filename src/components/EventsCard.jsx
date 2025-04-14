@@ -57,21 +57,33 @@ const SingleEventCard = ({ eventData }) => {
   const [showCalendarModal, setShowCalendarModal] = useState(false);
 
   const googleCalendarLink = () => {
-    const startDate = new Date(`${eventData.date}T${eventData.startTime}:00`);
-    const endDate = new Date(`${eventData.date}T${eventData.endTime}:00`);
-
+    if (!eventData.date || !eventData.startTime || !eventData.endTime) {
+      console.error("Date or time missing!", eventData);
+      return "#"; // fallback link atau jangan buka apa-apa
+    }
+  
+    const startDate = new Date(`${eventData.date}T${eventData.startTime}:00+07:00`);
+    const endDate = new Date(`${eventData.date}T${eventData.endTime}:00+07:00`);
+  
     const formatDate = (date) => {
+      if (isNaN(date)) {
+        console.error("Invalid date detected:", date);
+        return "";
+      }
       return date.toISOString().replace(/-|:|\.\d+/g, '');
     };
-
+    
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventData.title)}&dates=${formatDate(startDate)}/${formatDate(endDate)}&details=${encodeURIComponent(eventData.description)}&location=${encodeURIComponent(eventData.location)}&ctz=${eventData.timeZone}`;
   };
-
-  const generateICSContent = () => {
+    const generateICSContent = () => {
     const startDate = new Date(`${eventData.date}T${eventData.startTime}:00`);
     const endDate = new Date(`${eventData.date}T${eventData.endTime}:00`);
 
     const formatICSDate = (date) => {
+      if (isNaN(date)) {
+        console.error("Invalid date detected:", date);
+        return "";
+      }
       return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     };
 
